@@ -70,7 +70,7 @@ public class CarDAO {
         return cars;
     }
 
-    // ✅ DELETE CAR METHOD (MISSING METHOD FIX)
+
     public boolean deleteCar(int carId) {
         String query = "DELETE FROM cars WHERE car_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -82,7 +82,7 @@ public class CarDAO {
         return false;
     }
 
-    // ✅ UPDATE CAR METHOD (MISSING METHOD FIX)
+
     public boolean updateCar(Car car) {
         String query = "UPDATE cars SET car_model = ?, car_license_plate = ?, car_capacity = ?, car_status = ? WHERE car_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {

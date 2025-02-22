@@ -7,7 +7,7 @@ public class Car {
     private int carCapacity;
     private String carStatus;
 
-    // Constructor for fetching from the database (includes carId)
+
     public Car(int carId, String carModel, String carLicensePlate, int carCapacity, String carStatus) {
         this.carId = carId;
         this.carModel = carModel;
@@ -16,7 +16,7 @@ public class Car {
         this.carStatus = carStatus;
     }
 
-    // Constructor for adding a new car (without carId)
+
     public Car(String carModel, String carLicensePlate, int carCapacity, String carStatus) {
         this.carModel = carModel;
         this.carLicensePlate = carLicensePlate;
@@ -24,7 +24,7 @@ public class Car {
         this.carStatus = carStatus;
     }
 
-    // Getters and Setters
+
     public int getCarId() { return carId; }
     public void setCarId(int carId) { this.carId = carId; }
 

@@ -1,13 +1,20 @@
 package com.megacitycab.models;
 
-public class Driver {
+import java.io.Serializable;
+
+public class Driver implements Serializable {
     private int driverId;
     private String driverName;
     private String driverLicense;
     private String phoneNumber;
     private String driverStatus;
+    private int userId;
+    private String username;
+    private String password;
 
-    // Constructor for fetching from the database
+
+    public Driver() {}
+
     public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus) {
         this.driverId = driverId;
         this.driverName = driverName;
@@ -16,7 +23,7 @@ public class Driver {
         this.driverStatus = driverStatus;
     }
 
-    // Constructor for adding a new driver
+
     public Driver(String driverName, String driverLicense, String phoneNumber, String driverStatus) {
         this.driverName = driverName;
         this.driverLicense = driverLicense;
@@ -24,7 +31,38 @@ public class Driver {
         this.driverStatus = driverStatus;
     }
 
-    // Getters and Setters
+
+    public Driver(String driverName, String driverLicense, String phoneNumber, String driverStatus, String username, String password) {
+        this.driverName = driverName;
+        this.driverLicense = driverLicense;
+        this.phoneNumber = phoneNumber;
+        this.driverStatus = driverStatus;
+        this.username = username;
+        this.password = password;
+    }
+
+
+    public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus, String username, String password) {
+        this.driverId = driverId;
+        this.driverName = driverName;
+        this.driverLicense = driverLicense;
+        this.phoneNumber = phoneNumber;
+        this.driverStatus = driverStatus;
+        this.username = username;
+        this.password = password;
+    }
+
+
+    public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus, int userId) {
+        this.driverId = driverId;
+        this.driverName = driverName;
+        this.driverLicense = driverLicense;
+        this.phoneNumber = phoneNumber;
+        this.driverStatus = driverStatus;
+        this.userId = userId;
+    }
+
+
     public int getDriverId() { return driverId; }
     public void setDriverId(int driverId) { this.driverId = driverId; }
 
@@ -39,4 +77,13 @@ public class Driver {
 
     public String getDriverStatus() { return driverStatus; }
     public void setDriverStatus(String driverStatus) { this.driverStatus = driverStatus; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
