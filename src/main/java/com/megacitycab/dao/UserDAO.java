@@ -29,22 +29,25 @@ public class UserDAO {
     // ✅ Insert new user into the database (with hashed password)
     public boolean createUser(User user) {
         String query = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword()); // Hashed password
             stmt.setString(4, user.getRole());
 
-            System.out.println("📌 Inserting user: " + user.getUsername() + " | Email: " + user.getEmail());
-
             int rowsInserted = stmt.executeUpdate();
-            System.out.println("📌 Rows inserted: " + rowsInserted);
-            return rowsInserted > 0;
+            if (rowsInserted > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    user.setUserId(generatedKeys.getInt(1)); // ✅ Set generated user ID
+                }
+                return true;
+            }
         } catch (SQLException e) {
             System.out.println("❌ SQLException in createUser:");
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     // ✅ Fetch User Data by Username (Includes Role)
@@ -55,15 +58,37 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new User(
-                        rs.getInt("user_id"),
+                        rs.getInt("user_id"), // ✅ Using `user_id` to match database column
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password"),
-                        rs.getString("role") // Get role
+                        rs.getString("role")
                 );
             }
         } catch (SQLException e) {
             System.out.println("❌ SQLException in getUserByUsername:");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // ✅ Fetch User by ID
+    public User getUserById(int userId) {
+        String query = "SELECT * FROM users WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("user_id"), // ✅ Using `user_id` to match database column
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ SQLException in getUserById:");
             e.printStackTrace();
         }
         return null;

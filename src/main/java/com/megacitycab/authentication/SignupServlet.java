@@ -3,13 +3,12 @@ package com.megacitycab.authentication;
 import com.megacitycab.dao.UserDAO;
 import com.megacitycab.models.User;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @WebServlet("/SignupServlet")
 public class SignupServlet extends HttpServlet {
@@ -26,33 +25,37 @@ public class SignupServlet extends HttpServlet {
             throws ServletException, IOException {
         System.out.println("📌 SignupServlet triggered!");
 
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        // ✅ Trim inputs to prevent issues with spaces
+        String username = request.getParameter("username") != null ? request.getParameter("username").trim() : "";
+        String email = request.getParameter("email") != null ? request.getParameter("email").trim() : "";
+        String password = request.getParameter("password") != null ? request.getParameter("password").trim() : "";
+        String role = "Customer"; // ✅ Automatically set role to "Customer"
 
         System.out.println("📌 Received Data - Username: " + username + ", Email: " + email);
 
-        // Validate input fields
-        if (username == null || email == null || password == null ||
-                username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        // ✅ Validate input fields
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             System.out.println("❌ Error: Missing input fields!");
             response.sendRedirect("signup.jsp?error=All fields are required!");
             return;
         }
 
-        // Hash the password before storing
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-        System.out.println("📌 Hashed Password: " + hashedPassword);
-
-        User newUser = new User(username, email, hashedPassword, "Customer");
-
         try {
+            // ✅ Check if the username or email already exists
             if (userDAO.isUserExists(username, email)) {
                 System.out.println("❌ Error: Username or Email already exists!");
                 response.sendRedirect("signup.jsp?error=Username or Email already exists!");
                 return;
             }
 
+            // ✅ Hash the password before storing
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+            System.out.println("📌 Hashed Password: " + hashedPassword);
+
+            // ✅ Create a new User object with "Customer" as the role
+            User newUser = new User(username, email, hashedPassword, role);
+
+            // ✅ Insert user into the database
             boolean userCreated = userDAO.createUser(newUser);
             if (userCreated) {
                 System.out.println("✅ User successfully inserted into the database!");

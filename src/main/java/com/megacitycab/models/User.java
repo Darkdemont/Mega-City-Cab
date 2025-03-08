@@ -1,11 +1,18 @@
 package com.megacitycab.models;
 
-public class User {
-    private int userId;
+import java.io.Serializable;
+
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private int userId;  // ✅ Renamed to match database column `user_id`
     private String username;
     private String email;
     private String password;
     private String role;
+
+    // ✅ Default Constructor
+    public User() {}
 
     // ✅ Constructor for Creating a New User (Without userId)
     public User(String username, String email, String password, String role) {
@@ -25,8 +32,8 @@ public class User {
     }
 
     // ✅ Getters and Setters
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public int getUserId() { return userId; }  // ✅ Use `getUserId()` instead of `getId()`
+    public void setUserId(int userId) { this.userId = userId; }  // ✅ Use `setUserId()`
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -40,7 +47,7 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    // ✅ To String (Useful for Debugging)
+    // ✅ ToString for Debugging
     @Override
     public String toString() {
         return "User{" +
