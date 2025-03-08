@@ -20,7 +20,7 @@ public class DriverDAO {
         }
     }
 
-    // ✅ Add a new driver & create login credentials
+
     public boolean addDriver(Driver driver) {
         String userQuery = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
         String driverQuery = "INSERT INTO drivers (driver_name, driver_license, phone_number, driver_status, user_id) VALUES (?, ?, ?, ?, ?)";
@@ -28,20 +28,20 @@ public class DriverDAO {
         try {
             conn.setAutoCommit(false); // ✅ Start transaction
 
-            // ✅ Generate username if missing
+
             String username = (driver.getUsername() == null || driver.getUsername().isEmpty())
                     ? generateUsername(driver.getDriverName())
                     : driver.getUsername();
 
-            // ✅ Default password is driver license if missing
+
             String password = (driver.getPassword() == null || driver.getPassword().isEmpty())
                     ? driver.getDriverLicense()
                     : driver.getPassword();
 
-            // ✅ Hash the password
+
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
 
-            // ✅ Insert into users table
+
             try (PreparedStatement userStmt = conn.prepareStatement(userQuery, Statement.RETURN_GENERATED_KEYS)) {
                 userStmt.setString(1, username);
                 userStmt.setString(2, driver.getPhoneNumber() + "@megacitycab.com");
@@ -53,7 +53,7 @@ public class DriverDAO {
                 if (generatedKeys.next()) {
                     int userId = generatedKeys.getInt(1);
 
-                    // ✅ Insert into drivers table
+
                     try (PreparedStatement driverStmt = conn.prepareStatement(driverQuery)) {
                         driverStmt.setString(1, driver.getDriverName());
                         driverStmt.setString(2, driver.getDriverLicense());
@@ -84,7 +84,7 @@ public class DriverDAO {
         return false;
     }
 
-    // ✅ Get driver ID by User ID
+
     public int getDriverIdByUserId(int userId) {
         String query = "SELECT driver_id FROM drivers WHERE user_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -99,7 +99,7 @@ public class DriverDAO {
         return -1;
     }
 
-    // ✅ Get the first available driver
+
     public int getAvailableDriver() {
         String query = "SELECT driver_id FROM drivers WHERE driver_status = 'Available' LIMIT 1";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -113,7 +113,7 @@ public class DriverDAO {
         return -1;
     }
 
-    // ✅ Get all available drivers (Fixed column issue)
+
     public List<Driver> getAvailableDrivers() {
         List<Driver> drivers = new ArrayList<>();
         String query = "SELECT * FROM drivers WHERE driver_status = 'Available'"; // ✅ Ensure "Available" is the correct status
@@ -135,7 +135,30 @@ public class DriverDAO {
         return drivers;
     }
 
-    // ✅ Get all drivers (Fixed `username` column issue)
+    public Driver getDriverById(int driverId) {
+        String query = "SELECT * FROM drivers WHERE driver_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, driverId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Driver(
+                        rs.getInt("driver_id"),
+                        rs.getString("driver_name"),
+                        rs.getString("driver_license"),
+                        rs.getString("phone_number"),
+                        rs.getString("driver_status")
+                );
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "❌ Error fetching driver by ID", e);
+        }
+        return null;
+    }
+
+
+
+
+
     public List<Driver> getAllDrivers() {
         List<Driver> drivers = new ArrayList<>();
         String query = "SELECT d.driver_id, d.driver_name, d.driver_license, d.phone_number, d.driver_status, u.username " +
@@ -152,17 +175,17 @@ public class DriverDAO {
         return drivers;
     }
 
-    // ✅ Mark driver as "On Duty"
+
     public boolean markDriverOnDuty(int driverId) {
         return updateDriverStatus(driverId, "On Duty");
     }
 
-    // ✅ Mark driver as "Available"
+
     public boolean markDriverAvailable(int driverId) {
         return updateDriverStatus(driverId, "Available");
     }
 
-    // ✅ Generic method to update driver status
+
     private boolean updateDriverStatus(int driverId, String status) {
         String query = "UPDATE drivers SET driver_status = ? WHERE driver_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -175,7 +198,7 @@ public class DriverDAO {
         return false;
     }
 
-    // ✅ Update driver details
+
     public boolean updateDriver(Driver driver) {
         String query = "UPDATE drivers SET driver_name = ?, driver_license = ?, phone_number = ?, driver_status = ? WHERE driver_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -192,7 +215,7 @@ public class DriverDAO {
         return false;
     }
 
-    // ✅ Delete a driver
+
     public boolean deleteDriver(int driverId) {
         String query = "DELETE FROM drivers WHERE driver_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -203,6 +226,32 @@ public class DriverDAO {
         }
         return false;
     }
+
+    public Driver getDriverByBookingId(int bookingId) {
+        String query = "SELECT d.* FROM drivers d INNER JOIN bookings b ON d.driver_id = b.driver_id WHERE b.booking_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, bookingId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Driver(
+                        rs.getInt("driver_id"),
+                        rs.getString("driver_name"),
+                        rs.getString("driver_license"),
+                        rs.getString("phone_number"),
+                        rs.getString("driver_status"),
+                        rs.getInt("user_id")
+                );
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "❌ Error fetching driver by booking ID", e);
+        }
+        return null; // If no driver is found, return null
+    }
+
+
+
 
 
     private String generateUsername(String driverName) {

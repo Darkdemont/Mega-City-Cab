@@ -264,6 +264,23 @@ public class BookingDAO {
         return 0;
     }
 
+    public int getLastInsertedBookingId(int customerId) {
+        String query = "SELECT booking_id FROM bookings WHERE customer_id = ? ORDER BY booking_id DESC LIMIT 1";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("booking_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Return -1 if no booking found
+    }
+
+
+
+
     // ✅ Helper method to map ResultSet to Booking object
     private Booking mapResultSetToBooking(ResultSet rs) throws SQLException {
         return new Booking(

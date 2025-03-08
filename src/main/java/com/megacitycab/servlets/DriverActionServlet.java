@@ -2,8 +2,13 @@ package com.megacitycab.servlets;
 
 import com.megacitycab.dao.DatabaseConnection;
 import com.megacitycab.models.Booking;
+import com.megacitycab.models.Driver;
+import com.megacitycab.models.User;
 import com.megacitycab.dao.BookingDAO;
 import com.megacitycab.dao.DriverDAO;
+import com.megacitycab.dao.UserDAO;
+import com.megacitycab.utils.EmailUtil;
+import com.megacitycab.utils.SmsUtil;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,32 +26,27 @@ import java.math.BigDecimal;
 @WebServlet("/DriverActionServlet")
 public class DriverActionServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(DriverActionServlet.class.getName());
+
     private BookingDAO bookingDAO;
     private DriverDAO driverDAO;
+    private UserDAO userDAO;
 
     @Override
     public void init() {
         bookingDAO = new BookingDAO();
         driverDAO = new DriverDAO();
+        userDAO = new UserDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
 
-
         if (session == null) {
             logger.severe("❌ Session is missing!");
             response.sendRedirect("login.jsp?error=SessionExpired");
             return;
         }
-
-
-        Integer customerId = (Integer) session.getAttribute("customerId");
-        if (customerId != null) {
-            logger.info("🔍 Customer session exists: " + customerId);
-        }
-
 
         Integer driverId = (Integer) session.getAttribute("driverId");
         if (driverId == null) {
@@ -57,7 +57,6 @@ public class DriverActionServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         String bookingIdStr = request.getParameter("bookingId");
-
 
         if (bookingIdStr == null || bookingIdStr.isEmpty()) {
             logger.severe("❌ Missing bookingId in request!");
@@ -74,14 +73,16 @@ public class DriverActionServlet extends HttpServlet {
             return;
         }
 
-        boolean success = false;
         Booking booking = bookingDAO.getBookingById(bookingId);
-
         if (booking == null) {
             logger.severe("❌ Booking not found for ID: " + bookingId);
             response.sendRedirect("driverIndex.jsp?error=BookingNotFound");
             return;
         }
+
+        User customer = userDAO.getUserById(booking.getCustomerId());
+        Driver driver = driverDAO.getDriverById(driverId);
+        boolean success = false;
 
         switch (action) {
             case "accept":
@@ -101,6 +102,17 @@ public class DriverActionServlet extends HttpServlet {
                 if (success) {
                     driverDAO.markDriverOnDuty(driverId);
                     logger.info("✅ Booking " + bookingId + " accepted by Driver " + driverId);
+
+                    // ✅ Send Email & SMS to Customer
+                    String subject = "Driver Assigned to Your Booking";
+                    String message = "Dear " + customer.getUsername() + ",\nA driver has accepted your booking.\nDriver: " + driver.getDriverName();
+                    SmsUtil.sendSms(customer.getMobile(), "Your driver " + driver.getDriverName() + " has accepted your booking.");
+
+
+                    EmailUtil.sendEmail(customer.getEmail(), subject, message);
+                    SmsUtil.sendSms(customer.getMobile(), "Your driver " + driver.getDriverName() + " has accepted your booking.");
+
+                    session.setAttribute("message", "Booking accepted. Notification sent to the customer.");
                     response.sendRedirect("DriverDashboardServlet?success=BookingAccepted&bookingId=" + bookingId);
                 } else {
                     logger.warning("❌ Failed to assign booking " + bookingId + " to Driver " + driverId);
@@ -151,17 +163,8 @@ public class DriverActionServlet extends HttpServlet {
                     driverDAO.markDriverAvailable(driverId);
                     logger.info("✅ Booking " + bookingId + " marked as Completed by Driver " + driverId);
 
-                    // ✅ Ensure customer session is still active
-                    if (session.getAttribute("customerId") != null) {
-                        logger.info("🔍 Customer session still exists: " + session.getAttribute("customerId"));
-                    } else {
-                        logger.warning("⚠️ Customer session is missing after completing booking!");
-                    }
-
-
                     BillingService billingService = new BillingService();
                     BigDecimal totalFare = billingService.calculateTotalFare(booking.getDistanceKm());
-
 
                     BillingDAO billingDAO = new BillingDAO(DatabaseConnection.getConnection());
                     boolean isBillGenerated = billingDAO.savePayment(new Payment(

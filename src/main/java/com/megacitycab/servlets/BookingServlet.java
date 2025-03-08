@@ -7,6 +7,8 @@ import com.megacitycab.models.Booking;
 import com.megacitycab.models.Car;
 import com.megacitycab.models.Driver;
 import com.megacitycab.models.User;
+import com.megacitycab.utils.EmailUtil;
+import com.megacitycab.utils.SmsUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -47,7 +49,6 @@ public class BookingServlet extends HttpServlet {
         logger.info("📌 Fetching bookings for customer ID: " + customer.getUserId());
 
         List<Booking> bookings = bookingDAO.getBookingsByCustomerId(customer.getUserId());
-
 
         List<Car> availableCars = carDAO.getAvailableCars();
         request.setAttribute("availableCars", availableCars);
@@ -101,10 +102,22 @@ public class BookingServlet extends HttpServlet {
                 return;
             }
 
-            boolean success = bookingDAO.cancelBooking(bookingId);
-            if (success) {
+            boolean bookingCanceled = bookingDAO.cancelBooking(bookingId);
+            Driver driver = driverDAO.getDriverByBookingId(bookingId);
+
+            if (bookingCanceled) {
                 logger.info("✅ Booking ID " + bookingId + " canceled successfully.");
-                request.getSession().setAttribute("message", "Booking canceled successfully.");
+
+                // Notify the driver if assigned
+                if (driver != null) {
+                    String subject = "Booking Cancelled";
+                    String message = "Dear " + driver.getDriverName() + ",\nA customer has cancelled the booking.\nBooking ID: " + bookingId;
+
+                    EmailUtil.sendEmail(driver.getEmail(), subject, message);
+                    SmsUtil.sendSms(driver.getMobile(), "Booking ID " + bookingId + " has been cancelled.");
+                }
+
+                request.getSession().setAttribute("message", "Booking canceled successfully. Notification sent.");
             } else {
                 logger.warning("❌ Failed to cancel booking ID: " + bookingId);
                 request.getSession().setAttribute("errorMessage", "Failed to cancel booking.");
@@ -119,7 +132,7 @@ public class BookingServlet extends HttpServlet {
     private void handleNewBooking(HttpServletRequest request, HttpServletResponse response, User customer) throws IOException, ServletException {
         String pickupLocation = request.getParameter("pickupLocation");
         String destination = request.getParameter("destination");
-        String selectedCarModel = request.getParameter("carType"); // ✅ Fetch car model dynamically
+        String selectedCarModel = request.getParameter("carType");
         String dateTime = request.getParameter("dateTime");
         String distanceStr = request.getParameter("distanceKm");
 
@@ -138,7 +151,6 @@ public class BookingServlet extends HttpServlet {
             return;
         }
 
-
         Car selectedCar = carDAO.getCarByModel(selectedCarModel);
         if (selectedCar == null) {
             request.getSession().setAttribute("errorMessage", "Selected car is unavailable.");
@@ -146,21 +158,30 @@ public class BookingServlet extends HttpServlet {
             return;
         }
 
-
         String bookingStatus = "Upcoming";
         Booking booking = new Booking(customer.getUserId(), pickupLocation, destination, selectedCar.getCarModel(), dateTime, distanceKm, bookingStatus, -1);
 
         logger.info("🛠️ Attempting to add booking for customer ID: " + customer.getUserId());
 
-        boolean success = bookingDAO.addBooking(booking);
+        boolean bookingCreated = bookingDAO.addBooking(booking);
+        int newBookingId = bookingDAO.getLastInsertedBookingId(customer.getUserId());
 
-        if (success) {
+        if (bookingCreated) {
             logger.info("✅ Booking successfully added with status 'Upcoming' for customer ID: " + customer.getUserId());
-            request.getSession().setAttribute("message", "Booking request submitted. Waiting for a driver.");
+
+            // Send booking confirmation
+            String subject = "Booking Confirmation";
+            String message = "Dear " + customer.getUsername() + ",\nYour booking has been successfully created.\nBooking ID: " + newBookingId;
+
+            EmailUtil.sendEmail(customer.getEmail(), subject, message);
+            SmsUtil.sendSms(customer.getMobile(), "Your booking ID " + newBookingId + " has been confirmed.");
+
+            request.getSession().setAttribute("message", "Booking request submitted. Confirmation sent.");
         } else {
             logger.warning("❌ Booking failed for customer ID: " + customer.getUserId());
             request.getSession().setAttribute("errorMessage", "Booking failed. Please try again.");
         }
+
         response.sendRedirect("BookingServlet");
     }
 

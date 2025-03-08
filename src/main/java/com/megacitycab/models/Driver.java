@@ -11,7 +11,7 @@ public class Driver implements Serializable {
     private int userId;
     private String username;
     private String password;
-
+    private String email; // ✅ Added email field
 
     public Driver() {}
 
@@ -23,14 +23,12 @@ public class Driver implements Serializable {
         this.driverStatus = driverStatus;
     }
 
-
     public Driver(String driverName, String driverLicense, String phoneNumber, String driverStatus) {
         this.driverName = driverName;
         this.driverLicense = driverLicense;
         this.phoneNumber = phoneNumber;
         this.driverStatus = driverStatus;
     }
-
 
     public Driver(String driverName, String driverLicense, String phoneNumber, String driverStatus, String username, String password) {
         this.driverName = driverName;
@@ -40,7 +38,6 @@ public class Driver implements Serializable {
         this.username = username;
         this.password = password;
     }
-
 
     public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus, String username, String password) {
         this.driverId = driverId;
@@ -52,7 +49,6 @@ public class Driver implements Serializable {
         this.password = password;
     }
 
-
     public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus, int userId) {
         this.driverId = driverId;
         this.driverName = driverName;
@@ -62,6 +58,16 @@ public class Driver implements Serializable {
         this.userId = userId;
     }
 
+    // ✅ New Constructor with Email
+    public Driver(int driverId, String driverName, String driverLicense, String phoneNumber, String driverStatus, int userId, String email) {
+        this.driverId = driverId;
+        this.driverName = driverName;
+        this.driverLicense = driverLicense;
+        this.phoneNumber = phoneNumber;
+        this.driverStatus = driverStatus;
+        this.userId = userId;
+        this.email = email;
+    }
 
     public int getDriverId() { return driverId; }
     public void setDriverId(int driverId) { this.driverId = driverId; }
@@ -86,4 +92,18 @@ public class Driver implements Serializable {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    // ✅ Added getEmail() Method
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // ✅ Added getMobile() Method (returns phoneNumber)
+    public String getMobile() {
+        return this.phoneNumber;
+    }
 }

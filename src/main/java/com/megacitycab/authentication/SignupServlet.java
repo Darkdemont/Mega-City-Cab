@@ -3,13 +3,14 @@ package com.megacitycab.authentication;
 import com.megacitycab.dao.UserDAO;
 import com.megacitycab.models.User;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.regex.Pattern;
 
 @WebServlet("/SignupServlet")
 public class SignupServlet extends HttpServlet {
@@ -26,25 +27,38 @@ public class SignupServlet extends HttpServlet {
             throws ServletException, IOException {
         System.out.println("📌 SignupServlet triggered!");
 
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        // ✅ Trim inputs to prevent unnecessary spaces
+        String username = request.getParameter("username") != null ? request.getParameter("username").trim() : "";
+        String email = request.getParameter("email") != null ? request.getParameter("email").trim() : "";
+        String password = request.getParameter("password") != null ? request.getParameter("password").trim() : "";
+        String role = "Customer"; // ✅ Automatically assign role
 
         System.out.println("📌 Received Data - Username: " + username + ", Email: " + email);
 
-        // Validate input fields
-        if (username == null || email == null || password == null ||
-                username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        // ✅ Input Validations
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             System.out.println("❌ Error: Missing input fields!");
             response.sendRedirect("signup.jsp?error=All fields are required!");
             return;
         }
 
-        // Hash the password before storing
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-        System.out.println("📌 Hashed Password: " + hashedPassword);
+        if (username.length() < 3) {
+            System.out.println("❌ Error: Username too short!");
+            response.sendRedirect("signup.jsp?error=Username must be at least 3 characters long!");
+            return;
+        }
 
-        User newUser = new User(username, email, hashedPassword, "Customer");
+        if (!isValidEmail(email)) {
+            System.out.println("❌ Error: Invalid email format!");
+            response.sendRedirect("signup.jsp?error=Invalid email format!");
+            return;
+        }
+
+        if (password.length() < 6) {
+            System.out.println("❌ Error: Weak password!");
+            response.sendRedirect("signup.jsp?error=Password must be at least 6 characters long!");
+            return;
+        }
 
         try {
             if (userDAO.isUserExists(username, email)) {
@@ -53,10 +67,17 @@ public class SignupServlet extends HttpServlet {
                 return;
             }
 
+            // ✅ Hash the password using BCrypt for security
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+            System.out.println("📌 Hashed Password: " + hashedPassword);
+
+            // ✅ Create new user object
+            User newUser = new User(username, email, hashedPassword, role);
+
             boolean userCreated = userDAO.createUser(newUser);
             if (userCreated) {
                 System.out.println("✅ User successfully inserted into the database!");
-                response.sendRedirect("login.jsp?success=Account created successfully!");
+                response.sendRedirect("login.jsp?success=Account created successfully! Please login.");
             } else {
                 System.out.println("❌ Error: User insertion failed!");
                 response.sendRedirect("signup.jsp?error=Could not create account. Try again!");
@@ -66,5 +87,11 @@ public class SignupServlet extends HttpServlet {
             e.printStackTrace();
             response.sendRedirect("signup.jsp?error=Internal error. Please try again later.");
         }
+    }
+
+    // ✅ Helper Method: Validate Email Format using Regex
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return Pattern.compile(emailRegex).matcher(email).matches();
     }
 }
