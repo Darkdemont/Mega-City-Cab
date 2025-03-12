@@ -103,7 +103,7 @@ public class DriverActionServlet extends HttpServlet {
                     driverDAO.markDriverOnDuty(driverId);
                     logger.info("✅ Booking " + bookingId + " accepted by Driver " + driverId);
 
-                    // ✅ Send Email & SMS to Customer
+
                     String subject = "Driver Assigned to Your Booking";
                     String message = "Dear " + customer.getUsername() + ",\nA driver has accepted your booking.\nDriver: " + driver.getDriverName();
                     SmsUtil.sendSms(customer.getMobile(), "Your driver " + driver.getDriverName() + " has accepted your booking.");

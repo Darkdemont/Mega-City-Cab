@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // ✅ Retrieve user from database
+
         User user = userDAO.getUserByUsername(username);
 
         if (user != null && userDAO.validateUser(username, password)) {
@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("role", user.getRole());
             session.setAttribute("userId", user.getUserId());
 
-            // ✅ Fetch `driver_id` for drivers
+
             if ("Driver".equals(user.getRole())) {
                 int driverId = driverDAO.getDriverIdByUserId(user.getUserId());
                 if (driverId > 0) {

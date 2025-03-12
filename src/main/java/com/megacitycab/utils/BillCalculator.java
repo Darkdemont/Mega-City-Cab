@@ -20,36 +20,29 @@ public class BillCalculator {
      * @return The final calculated fare.
      */
     public static double calculateTotal(double distanceKm, int rideCount) {
-        // Ensure valid distance
         if (distanceKm <= 0) {
-            return BASE_FARE; // Minimum fare applies if distance is 0 or invalid
+            return BASE_FARE;
         }
 
-        // ✅ 1. Calculate base fare
         double baseFare = BASE_FARE + (distanceKm * RATE_PER_KM);
 
-        // ✅ 2. Apply automatic discounts
         double discountPercentage = BASE_DISCOUNT;
 
         if (baseFare > 50) {
-            discountPercentage += HIGH_FARE_DISCOUNT_10; // 10% extra off if fare > $50
+            discountPercentage += HIGH_FARE_DISCOUNT_10;
         } else if (baseFare > 25) {
-            discountPercentage += HIGH_FARE_DISCOUNT_5; // 5% extra off if fare > $25
+            discountPercentage += HIGH_FARE_DISCOUNT_5;
         }
 
-        // ✅ 3. Apply loyalty discount if the customer has more than 10 rides
         if (rideCount > 10) {
             discountPercentage += LOYALTY_DISCOUNT;
         }
 
-        // ✅ 4. Calculate discount and tax
         double discountAmount = baseFare * discountPercentage;
         double taxAmount = baseFare * TAX_RATE;
 
-        // ✅ 5. Final fare calculation
         double finalFare = baseFare + taxAmount - discountAmount;
 
-        // ✅ 6. Ensure final fare is not negative
         return Math.max(finalFare, BASE_FARE);
     }
 }
