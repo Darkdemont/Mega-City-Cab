@@ -82,7 +82,7 @@ public class LoginServlet extends HttpServlet {
         return false;
     }
 
-    // ✅ Redirect user based on role and include success message in session
+
     private String getRedirectURL(String role) {
         switch (role) {
             case "Admin":
