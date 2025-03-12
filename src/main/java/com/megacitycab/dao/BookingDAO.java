@@ -184,7 +184,6 @@ public class BookingDAO {
 
 
 
-    // ✅ Update booking fare
     public boolean updateBookingFare(int bookingId, double totalFare) {
         String query = "UPDATE bookings SET total_fare = ? WHERE booking_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -197,7 +196,7 @@ public class BookingDAO {
         return false;
     }
 
-    // ✅ Fetch a single booking by ID
+
     public Booking getBookingById(int bookingId) {
         String query = "SELECT * FROM bookings WHERE booking_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -212,7 +211,7 @@ public class BookingDAO {
         return null;
     }
 
-    // ✅ Fetch all bookings (Admin Dashboard)
+
     public List<Booking> getAllBookings() {
         List<Booking> bookings = new ArrayList<>();
         String query = "SELECT * FROM bookings ORDER BY date_time DESC";
@@ -236,7 +235,7 @@ public class BookingDAO {
         return bookings;
     }
 
-    // ✅ Get total earnings from completed bookings
+
     public double getTotalEarnings() {
         String query = "SELECT SUM(total_fare) FROM bookings WHERE status = 'Completed'";
         try (PreparedStatement stmt = conn.prepareStatement(query);
@@ -250,7 +249,7 @@ public class BookingDAO {
         return 0.0;
     }
 
-    // ✅ Get total completed bookings count
+
     public int getTotalBookings() {
         String query = "SELECT COUNT(*) FROM bookings WHERE status = 'Completed'";
         try (PreparedStatement stmt = conn.prepareStatement(query);
@@ -275,13 +274,13 @@ public class BookingDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // Return -1 if no booking found
+        return -1;
     }
 
 
 
 
-    // ✅ Helper method to map ResultSet to Booking object
+
     private Booking mapResultSetToBooking(ResultSet rs) throws SQLException {
         return new Booking(
                 rs.getInt("booking_id"),

@@ -44,9 +44,9 @@ public class Booking implements Serializable {
         this.carType = carType;
         this.dateTime = dateTime;
         this.distanceKm = distanceKm;
-        this.totalFare = 0.0;   // ✅ Default total fare to 0
+        this.totalFare = 0.0;
         this.status = status;
-        this.driverId = -1;     // ✅ Default driver ID to -1 (unassigned)
+        this.driverId = -1;
     }
 
 
@@ -60,7 +60,7 @@ public class Booking implements Serializable {
         this.distanceKm = distanceKm;
         this.totalFare = 0.0;
         this.status = status;
-        this.driverId = driverId; // ✅ Allows assigning a driver at booking time
+        this.driverId = driverId;
     }
 
 

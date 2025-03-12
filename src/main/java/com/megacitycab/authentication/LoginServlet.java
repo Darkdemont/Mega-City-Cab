@@ -60,10 +60,10 @@ public class LoginServlet extends HttpServlet {
                 }
             }
 
-            session.setMaxInactiveInterval(30 * 60); // ✅ Set session timeout (30 min)
+            session.setMaxInactiveInterval(30 * 60);
             logger.info("✅ Login successful: User " + username + " (" + user.getRole() + ") logged in.");
 
-            // ✅ Redirect user based on their role and show success message
+
             response.sendRedirect(getRedirectURL(user.getRole()));
 
         } else {
@@ -72,7 +72,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // ✅ Utility method to check for null or empty values
+
     private boolean isNullOrEmpty(String... values) {
         for (String value : values) {
             if (value == null || value.trim().isEmpty()) {

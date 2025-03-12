@@ -94,7 +94,7 @@ public class BookingServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ Allow cancellation only if booking is "Upcoming" or "Accepted"
+
             if (!"Upcoming".equals(booking.getStatus()) && !"Accepted".equals(booking.getStatus())) {
                 logger.warning("🚨 Cannot cancel booking ID " + bookingId + " with status: " + booking.getStatus());
                 request.getSession().setAttribute("errorMessage", "Booking cannot be canceled at this stage.");
@@ -169,7 +169,7 @@ public class BookingServlet extends HttpServlet {
         if (bookingCreated) {
             logger.info("✅ Booking successfully added with status 'Upcoming' for customer ID: " + customer.getUserId());
 
-            // Send booking confirmation
+
             String subject = "Booking Confirmation";
             String message = "Dear " + customer.getUsername() + ",\nYour booking has been successfully created.\nBooking ID: " + newBookingId;
 

@@ -43,7 +43,7 @@ public class UserDAO {
             if (rowsInserted > 0) {
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    user.setUserId(generatedKeys.getInt(1)); // ✅ Set generated user ID
+                    user.setUserId(generatedKeys.getInt(1));
                 }
                 return true;
             }

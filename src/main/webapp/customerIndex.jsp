@@ -11,7 +11,7 @@
   <title>Customer Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/customerDashboard.css">
-  <!-- Google Maps API -->
+
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAC25mXxrVn9pTIFZTrH8TokvdZYwZHq9I&libraries=places&callback=initMap" async defer></script>
 </head>
 <body class="container mt-4">
@@ -190,12 +190,12 @@
   let map, pickupMarker, destMarker, directionsService, directionsRenderer;
   let pickupAutocomplete, destAutocomplete;
 
-  // Initialize Google Map
+
   function initMap() {
     try {
       console.log("Initializing Google Map...");
       map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 6.9271, lng: 79.8612 }, // Default: Colombo, Sri Lanka
+        center: { lat: 6.9271, lng: 79.8612 },
         zoom: 12,
       });
       console.log("Map initialized successfully");
@@ -203,7 +203,7 @@
       directionsService = new google.maps.DirectionsService();
       directionsRenderer = new google.maps.DirectionsRenderer({
         map: map,
-        suppressMarkers: true, // Use custom markers
+        suppressMarkers: true,
       });
       console.log("Directions Service and Renderer initialized");
 
@@ -273,7 +273,6 @@
     }
   }
 
-  // Calculate and Display Route
   function calculateAndDisplayRoute(origin, destination) {
     try {
       console.log("Calculating route from", origin, "to", destination);
@@ -311,7 +310,7 @@
     }
   }
 
-  // Add Markers to Map
+
   function addMarkers(pickupLatLng, destLatLng) {
     try {
       console.log("Adding markers...");
@@ -356,7 +355,7 @@
     }
   }
 
-  // Ensure map loads
+
   window.initMap = initMap;
 </script>
 </body>

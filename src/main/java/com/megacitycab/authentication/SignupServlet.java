@@ -27,7 +27,7 @@ public class SignupServlet extends HttpServlet {
             throws ServletException, IOException {
         System.out.println("📌 SignupServlet triggered!");
 
-        // ✅ Trim inputs to prevent unnecessary spaces
+
         String username = request.getParameter("username") != null ? request.getParameter("username").trim() : "";
         String email = request.getParameter("email") != null ? request.getParameter("email").trim() : "";
         String password = request.getParameter("password") != null ? request.getParameter("password").trim() : "";
@@ -35,7 +35,7 @@ public class SignupServlet extends HttpServlet {
 
         System.out.println("📌 Received Data - Username: " + username + ", Email: " + email);
 
-        // ✅ Input Validations
+
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             System.out.println("❌ Error: Missing input fields!");
             response.sendRedirect("signup.jsp?error=All fields are required!");
@@ -62,24 +62,24 @@ public class SignupServlet extends HttpServlet {
 
         try {
             if (userDAO.isUserExists(username, email)) {
-                System.out.println("❌ Error: Username or Email already exists!");
+                System.out.println("Error: Username or Email already exists!");
                 response.sendRedirect("signup.jsp?error=Username or Email already exists!");
                 return;
             }
 
-            // ✅ Hash the password using BCrypt for security
-            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-            System.out.println("📌 Hashed Password: " + hashedPassword);
 
-            // ✅ Create new user object
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+            System.out.println(" Hashed Password: " + hashedPassword);
+
+
             User newUser = new User(username, email, hashedPassword, role);
 
             boolean userCreated = userDAO.createUser(newUser);
             if (userCreated) {
-                System.out.println("✅ User successfully inserted into the database!");
+                System.out.println(" User successfully inserted into the database!");
                 response.sendRedirect("login.jsp?success=Account created successfully! Please login.");
             } else {
-                System.out.println("❌ Error: User insertion failed!");
+                System.out.println("error: User insertion failed!");
                 response.sendRedirect("signup.jsp?error=Could not create account. Try again!");
             }
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class SignupServlet extends HttpServlet {
         }
     }
 
-    // ✅ Helper Method: Validate Email Format using Regex
+
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         return Pattern.compile(emailRegex).matcher(email).matches();

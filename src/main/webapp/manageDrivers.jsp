@@ -19,7 +19,7 @@
 <body class="container mt-4">
 <h2 class="mb-4">Manage Drivers</h2>
 
-<!-- ✅ Display Success or Error Message -->
+
 <% if ("true".equals(success)) { %>
 <div class="alert alert-success">
     ✅ Driver added successfully!<br>
@@ -31,7 +31,7 @@
 <div class="alert alert-danger">❌ Failed to add driver. Please try again.</div>
 <% } %>
 
-<!-- ✅ Add Driver Form -->
+
 <form action="manageDrivers" method="POST" class="mb-4">
     <div class="row g-3">
         <div class="col-md-2">
@@ -148,7 +148,7 @@
     </div>
 </div>
 
-<!-- ✅ JavaScript for Edit Modal -->
+
 <script>
     function editDriver(id, name, license, phone, username, status) {
         document.getElementById('editDriverId').value = id;
@@ -161,7 +161,7 @@
     }
 </script>
 
-<!-- ✅ Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
