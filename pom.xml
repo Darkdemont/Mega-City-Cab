@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.megacitycab</groupId>
@@ -12,17 +13,18 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <junit.version>5.11.0</junit.version>
         <jersey.version>3.1.5</jersey.version>
         <hibernate.version>6.2.5.Final</hibernate.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <mysql.version>8.0.33</mysql.version>
+        <pdfbox.version>2.0.30</pdfbox.version>  <!-- ✅ Latest stable PDFBox version -->
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE Web API (Includes Servlets, JPA, JSON, CDI, etc.) -->
+        <!-- ✅ Jakarta EE Web API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-web-api</artifactId>
@@ -30,21 +32,21 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Jersey (Jakarta RESTful Web Services) -->
+        <!-- ✅ Jersey (Jakarta RESTful Web Services) -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
         </dependency>
 
-        <!-- Hibernate (JPA ORM Implementation) -->
+        <!-- ✅ Hibernate (JPA ORM Implementation) -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
 
-        <!-- MySQL JDBC Driver -->
+        <!-- ✅ MySQL JDBC Driver -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -52,7 +54,10 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JUnit for Testing -->
+
+
+
+        <!-- ✅ JUnit for Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -66,7 +71,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Lombok (for reducing boilerplate code) -->
+        <!-- ✅ Lombok (for reducing boilerplate code) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -74,25 +79,60 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Log4j (for Logging) -->
+        <!-- ✅ Log4j (for Logging) -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.20.0</version>
         </dependency>
 
-        <!-- BCrypt (for Password Hashing) -->
+        <!-- ✅ BCrypt (for Password Hashing) -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.30</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+
+
+
+
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>8.30.1</version>
+        </dependency>
+
+
+
+
+
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin -->
+            <!-- ✅ Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -103,21 +143,21 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven WAR Plugin (For Tomcat Deployment) -->
+            <!-- ✅ Maven WAR Plugin (For Tomcat Deployment) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
 
-            <!-- Surefire Plugin (For Running JUnit Tests) -->
+            <!-- ✅ Surefire Plugin (For Running JUnit Tests) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M9</version>
             </plugin>
 
-            <!-- Maven Dependency Plugin (For Forcing Dependency Downloads) -->
+            <!-- ✅ Maven Dependency Plugin (For Dependency Management) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -133,7 +173,7 @@
                 </executions>
             </plugin>
 
-            <!-- Maven Exec Plugin (For Running Java Main Classes) -->
+            <!-- ✅ Maven Exec Plugin (For Running Java Main Classes) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
